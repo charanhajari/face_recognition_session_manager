@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Activity - {{ username }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #444;
+            margin-top: 30px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: #6c757d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .duration {
+            font-weight: bold;
+        }
+        .day-sessions {
+            margin: 25px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .day-sessions h3 {
+            color: #333;
+            margin-top: 0;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+        }
+        .session-list {
+            margin-top: 15px;
+        }
+        .session {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .session-time {
+            flex: 2;
+        }
+        .session-duration {
+            flex: 1;
+            text-align: center;
+        }
+        .session-status {
+            flex: 1;
+            text-align: right;
+        }
+        .separator {
+            margin: 0 5px;
+            color: #6c757d;
+        }
+        .status-completed {
+            color: #28a745;
+        }
+        .status-active {
+            color: #007bff;
+        }
+        .date-filter {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .date-filter input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .date-filter button {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .clear-filter {
+            color: #6c757d;
+            text-decoration: none;
+            margin-left: 10px;
+        }
+        .clear-filter:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Activity Details for {{ username }}</h1>
+        
+        <div class="date-filter">
+            <form method="get" action="">
+                <input type="date" name="date" value="{{ selected_date if selected_date else '' }}">
+                <button type="submit">Filter</button>
+                {% if selected_date %}
+                <a href="/user-activity/{{ username }}" class="clear-filter">Clear Filter</a>
+                {% endif %}
+            </form>
+        </div>
+        
+        <h2>Daily Summary</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Total Active Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for date, seconds in daily_totals %}
+                <tr>
+                    <td>{{ date }}</td>
+                    <td class="duration">{{ (seconds / 3600)|round(2) }} hours</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <h2>Daily Session Details</h2>
+        {% for date, sessions in sessions_by_date.items() %}
+        <div class="day-sessions">
+            <h3>{{ date }}</h3>
+            <div class="session-list">
+                {% for session in sessions %}
+                <div class="session">
+                    <div class="session-time">
+                        <span class="login">{{ session.login if session.login else 'N/A' }}</span>
+                        <span class="separator">to</span>
+                        <span class="logout">{{ session.logout if session.logout else 'N/A' }}</span>
+                    </div>
+                    <div class="session-duration">
+                        Duration: <span class="duration">{{ (session.duration / 3600)|round(2) }} hours</span>
+                    </div>
+                    <div class="session-status status-{% if session.logout %}completed{% else %}active{% endif %}">
+                        {% if session.logout %}Completed{% else %}Active{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <a href="/sessions" class="back-btn">Back to All Sessions</a>
+    </div>
+</body>
+</html>

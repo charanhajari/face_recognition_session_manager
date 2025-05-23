@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Activity</title>
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .date-filter {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        .back-btn {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Daily Activity Summary</h1>
+        
+        <div class="date-filter">
+            <input type="date" id="start-date">
+            <input type="date" id="end-date">
+            <button onclick="filterByDate()">Filter</button>
+        </div>
+
+        <table id="activity-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Username</th>
+                    <th>Active Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for date, username, seconds in daily_activity %}
+                <tr>
+                    <td>{{ date }}</td>
+                    <td>{{ username }}</td>
+                    <td>{{ (seconds / 3600)|round(2) }} hours</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <button class="back-btn" onclick="window.location.href='/sessions'">Back to Sessions</button>
+    </div>
+
+    <script>
+        function filterByDate() {
+            const startDate = document.getElementById('start-date').value;
+            const endDate = document.getElementById('end-date').value;
+            const rows = document.querySelectorAll('#activity-table tbody tr');
+            
+            rows.forEach(row => {
+                const rowDate = row.cells[0].textContent;
+                const showRow = (!startDate || rowDate >= startDate) && 
+                               (!endDate || rowDate <= endDate);
+                row.style.display = showRow ? '' : 'none';
+            });
+        }
+        
+        // Set default dates
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('start-date').value = today;
+            document.getElementById('end-date').value = today;
+        });
+    </script>
+</body>
+</html>
