@@ -23,7 +23,7 @@ This is a Flask-based web application that uses face recognition technology to m
 ## Setup and Installation
 1. Clone the repository:
    ```
-   git clone <repository-url>
+   git clone https://github.com/charanhajari/face_recognition_session_manager
    cd Face_recognition_session_manager
    ```
 
